@@ -2,115 +2,283 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checklist Kehadiran</title>
   <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f4f8;
+      padding: 16px;
+      background-image: url("my\ bini\ kei.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header h1 {
+      font-size: clamp(20px, 5vw, 28px);
+      color: #1e293b;
+      font-weight: 700;
+    }
+
+    .header h3 {
+      font-size: clamp(13px, 3vw, 16px);
+      color: #64748b;
+      font-weight: 400;
+      margin-top: 4px;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+
     table {
       border-collapse: collapse;
       width: 100%;
-      font-size: 14px;
-    }
-    th, td {
-      border: 1px solid #333;
-      padding: 6px;
-      text-align: center;
-    }
-    th:first-child, td:first-child {
-      text-align: left;
-      min-width: 200px;
-    }
-    .semester{
-        text-align: center;
-        justify-content: center;
-        align-items: center;
-        height: 100px;
-    }
-    .judul {
-        text-align: center;
-        justify-content: center;
-        align-items: center;
-        height: 50px;
+      font-size: 13px;
+      background: #fff;
+      table-layout: fixed;
     }
 
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 8px 4px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    th:first-child, td:first-child {
+      text-align: left;
+      padding-left: 12px;
+      min-width: 180px;
+      vertical-align: middle;
+      width: 250px;
+    }
+
+    #header-row th {
+        width: 40px;
+    }
+
+    thead tr:first-child th {
+      background: #1e40af;
+      color: white;
+      font-size: 13px;
+    }
+
+    #header-row th {
+      background: #dbeafe;
+      color: #1e3a8a;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    tbody tr:nth-child(even) { background: #f8fafc; }
+    tbody tr:hover { background: #eff6ff; }
+
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: #2563eb;
+    }
+
+    .mobile-cards { display: none; }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      margin-bottom: 14px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      background: #1e40af;
+      color: white;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .card-body {
+      padding: 12px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pertemuan-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      min-width: 36px;
+    }
+
+    .pertemuan-item label {
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 600;
+    }
+
+    .pertemuan-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+    }
+
+    .status-bar {
+      text-align: center;
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 12px;
+    }
+
+    .status-bar span {
+      color: #16a34a;
+      font-weight: 700;
+    }
+
+    @media (max-width: 640px) {
+      .table-wrapper { display: none; }
+      .mobile-cards { display: block; }
+    }
   </style>
 </head>
 <body>
 
-<div class="semester">
-    <h1>SEMESTER 4</h1>
+<div class="header">
+  <h1>SEMESTER 4</h1>
+  <h3>JADWAL KEHADIRAN</h3>
 </div>
 
-<div class="judul">
-    <h3>JADWAL</h3>
+<div class="table-wrapper">
+  <table>
+    <thead>
+      <tr>
+        <th rowspan="2" style="vertical-align: middle;">Mata Kuliah</th>
+        <th colspan="16">Pertemuan</th>
+      </tr>
+      <tr id="header-row"></tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
 </div>
-    
-<table>
-  <thead>
-    <tr>
-      <th>Mata Kuliah</th>
-      <th colspan="16">Pertemuan</th>
-    </tr>
-    <tr id="header-row"></tr>
-  </thead>
-  <tbody id="table-body"></tbody>
-</table>
+
+<div class="mobile-cards" id="mobile-cards"></div>
+
+<div class="status-bar" id="status-bar"></div>
 
 <script>
+  const STORAGE_KEY = "checklist_kehadiran_s4";
+  const pertemuan = 16;
+  const matkul = [
+    "Fisika Listrik Magnet",
+    "Sejarah Pendidikan dan PGRI",
+    "Sistem Basis Data",
+    "Praktikum Sistem Basis Data",
+    "Metode Numerik",
+    "Arsitektur dan Organisasi Komputer",
+    "Manajemen Proyek",
+    "Aljabar Linier dan Matrik"
+  ];
 
-const STORAGE_KEY = "checklist_kehadiran_s4";    
+  // Build desktop table
+  const headerRow = document.getElementById("header-row");
+  headerRow.innerHTML =
 
-const pertemuan = 16;
+    Array.from({ length: pertemuan }, (_, i) => `<th>P${i+1}</th>`).join("");
 
-const matkul = [
-  "Fisika Listrik Magnet",
-  "Sejarah Pendidikan dan PGRI",
-  "Sistem Basis Data",
-  "Praktikum Sistem Basis Data",
-  "Metode Numerik",
-  "Arsitektur dan Organisasi Komputer",
-  "Manajemen Proyek",
-  "Aljabar Linier dan Matrik"
-];
+  const tbody = document.getElementById("table-body");
+  tbody.innerHTML = matkul.map((mk, rowIndex) => `
+    <tr>
+      <td>${mk}</td>
+      ${Array.from({ length: pertemuan }, (_, colIndex) => `
+        <td><input type="checkbox" id="c-${rowIndex}-${colIndex}"></td>
+      `).join("")}
+    </tr>
+  `).join("");
 
-const headerRow = document.getElementById("header-row");
-headerRow.innerHTML =
-  "<th></th>" +
-  Array.from({ length: pertemuan }, (_, i) => `<th>P${i+1}</th>`).join("");
+  // Build mobile cards
+  const mobileCards = document.getElementById("mobile-cards");
+  mobileCards.innerHTML = matkul.map((mk, rowIndex) => `
+    <div class="card">
+      <div class="card-header">${mk}</div>
+      <div class="card-body">
+        ${Array.from({ length: pertemuan }, (_, colIndex) => `
+          <div class="pertemuan-item">
+            <label for="m-${rowIndex}-${colIndex}">P${colIndex+1}</label>
+            <input type="checkbox" id="m-${rowIndex}-${colIndex}">
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `).join("");
 
-const tbody = document.getElementById("table-body");
-
-tbody.innerHTML = matkul.map((mk, rowIndex) => `
-  <tr>
-    <td>${mk}</td>
-    ${Array.from({ length: pertemuan }, (_, colIndex) => `
-      <td>
-        <input type="checkbox" 
-               id="c-${rowIndex}-${colIndex}">
-      </td>
-    `).join("")}
-  </tr>
-`).join("");
-
-function saveState() {
+  // Save & Load — sync desktop dan mobile
+  function saveState() {
     const state = [];
     matkul.forEach((_, rowIndex) => {
       for (let colIndex = 0; colIndex < pertemuan; colIndex++) {
-        const el = document.getElementById(`c-${rowIndex}-${colIndex}`);
-        if (el) state.push({ id: `c-${rowIndex}-${colIndex}`, checked: el.checked });
+        const desk = document.getElementById(`c-${rowIndex}-${colIndex}`);
+        const mob  = document.getElementById(`m-${rowIndex}-${colIndex}`);
+        const checked = desk ? desk.checked : (mob ? mob.checked : false);
+        state.push({ rowIndex, colIndex, checked });
       }
     });
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    updateStatus();
   }
 
   function loadState() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (!saved) return;
-    JSON.parse(saved).forEach(({ id, checked }) => {
-      const el = document.getElementById(id);
-      if (el) el.checked = checked;
+    JSON.parse(saved).forEach(({ rowIndex, colIndex, checked }) => {
+      const desk = document.getElementById(`c-${rowIndex}-${colIndex}`);
+      const mob  = document.getElementById(`m-${rowIndex}-${colIndex}`);
+      if (desk) desk.checked = checked;
+      if (mob)  mob.checked  = checked;
     });
+    updateStatus();
   }
 
-   tbody.addEventListener("change", saveState);
+  // Sync checkbox desktop <-> mobile saat diubah
+  function syncCheckbox(rowIndex, colIndex, checked) {
+    const desk = document.getElementById(`c-${rowIndex}-${colIndex}`);
+    const mob  = document.getElementById(`m-${rowIndex}-${colIndex}`);
+    if (desk) desk.checked = checked;
+    if (mob)  mob.checked  = checked;
+    saveState();
+  }
+
+  tbody.addEventListener("change", (e) => {
+    const id = e.target.id; // c-rowIndex-colIndex
+    const [, row, col] = id.split("-").map(Number);
+    syncCheckbox(row, col, e.target.checked);
+  });
+
+  mobileCards.addEventListener("change", (e) => {
+    const id = e.target.id; // m-rowIndex-colIndex
+    const [, row, col] = id.split("-").map(Number);
+    syncCheckbox(row, col, e.target.checked);
+  });
+
+  function updateStatus() {
+    const all = matkul.length * pertemuan;
+    const checked = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]")
+      .filter(s => s.checked).length;
+    document.getElementById("status-bar").innerHTML =
+      `Total hadir: <span>${checked}</span> / ${all} pertemuan`;
+  }
+
   loadState();
 </script>
 
