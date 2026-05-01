@@ -155,6 +155,10 @@
     }
 
     @media (max-width: 640px) {
+       body {
+    background-attachment: scroll; 
+    background-position: 70% center;
+  }
       .table-wrapper { display: none; }
       .mobile-cards { display: block; }
     }
@@ -198,7 +202,6 @@
     "Aljabar Linier dan Matrik"
   ];
 
-  // Build desktop table
   const headerRow = document.getElementById("header-row");
   headerRow.innerHTML =
 
@@ -214,7 +217,6 @@
     </tr>
   `).join("");
 
-  // Build mobile cards
   const mobileCards = document.getElementById("mobile-cards");
   mobileCards.innerHTML = matkul.map((mk, rowIndex) => `
     <div class="card">
@@ -230,7 +232,6 @@
     </div>
   `).join("");
 
-  // Save & Load — sync desktop dan mobile
   function saveState() {
     const state = [];
     matkul.forEach((_, rowIndex) => {
@@ -257,7 +258,6 @@
     updateStatus();
   }
 
-  // Sync checkbox desktop <-> mobile saat diubah
   function syncCheckbox(rowIndex, colIndex, checked) {
     const desk = document.getElementById(`c-${rowIndex}-${colIndex}`);
     const mob  = document.getElementById(`m-${rowIndex}-${colIndex}`);
@@ -267,13 +267,13 @@
   }
 
   tbody.addEventListener("change", (e) => {
-    const id = e.target.id; // c-rowIndex-colIndex
+    const id = e.target.id;
     const [, row, col] = id.split("-").map(Number);
     syncCheckbox(row, col, e.target.checked);
   });
 
   mobileCards.addEventListener("change", (e) => {
-    const id = e.target.id; // m-rowIndex-colIndex
+    const id = e.target.id;
     const [, row, col] = id.split("-").map(Number);
     syncCheckbox(row, col, e.target.checked);
   });
