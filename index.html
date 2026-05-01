@@ -41,18 +41,20 @@
       overflow-x: auto;
       border-radius: 10px;
       box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
     }
 
     table {
       border-collapse: collapse;
       width: 100%;
       font-size: 13px;
-      background: #fff;
+      background: transparent;
       table-layout: fixed;
     }
 
     th, td {
-      border: 1px solid #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.5);
       padding: 8px 4px;
       text-align: center;
       white-space: nowrap;
@@ -83,8 +85,8 @@
       font-weight: 600;
     }
 
-    tbody tr:nth-child(even) { background: #f8fafc; }
-    tbody tr:hover { background: #eff6ff; }
+    tbody tr:nth-child(even) { background: rgba(255, 255, 255, 0.15); }
+    tbody tr:hover { background: rgba(255, 255, 255, 0.25); }
 
     input[type="checkbox"] {
       width: 16px;
@@ -96,11 +98,12 @@
     .mobile-cards { display: none; }
 
     .card {
-      background: #fff;
+      background: transparent;
       border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: none;
       margin-bottom: 14px;
       overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.5);
     }
 
     .card-header {
@@ -116,6 +119,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.3);
     }
 
     .pertemuan-item {
@@ -128,8 +132,9 @@
 
     .pertemuan-item label {
       font-size: 11px;
-      color: #64748b;
+      color: #fff;
       font-weight: 600;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.4);
     }
 
     .pertemuan-item input[type="checkbox"] {
